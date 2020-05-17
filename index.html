@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+
+    <div class="canvas"></div>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.14.4/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.14.4/firebase-firestore.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+        https://firebase.google.com/docs/web/setup#available-libraries -->
+
+    <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyDVocCZFZPsSAqGN90AJQvPBaPeJ6uPY_4",
+        authDomain: "d3js-189e9.firebaseapp.com",
+        databaseURL: "https://d3js-189e9.firebaseio.com",
+        projectId: "d3js-189e9",
+        storageBucket: "d3js-189e9.appspot.com",
+        messagingSenderId: "497911450392",
+        appId: "1:497911450392:web:4a08a379211b7ee5cc6c6d"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    // db.settings({timestapsInSnapshots:true})
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.16.0/d3.min.js"></script>
+    <script src="linear_scale.js"></script>
+</body>
+</html>
