@@ -1,0 +1,81 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <style>
+    h2, p{
+      margin: 10px 0;
+    }
+    header{
+      margin-bottom: 40px;
+    }
+  </style>
+  <title>Ninja Wonga</title>
+</head>
+<body class="indigo">
+
+  <header class="indigo darken-1 section">
+    <h2 class="center white-text">Ninja Wonga</h2>
+    <p class="flow-text grey-text center text-lighten-2">Monthly money tracker for ninjas...</p>
+  </header>
+
+  <div class="container section">
+    <div class="row">
+      <div class="col s12 m6">
+        <form class="card z-depth-0">
+          <div class="card-content">
+            <span class="card-title indigo-text">Add Item:</span>
+            <div class="input-field">
+              <input type="text" id="name">
+              <label for="name">Item Name</label>
+            </div>
+            <div class="input-field">
+              <input type="text" id="cost">
+              <label for="cost">Item Cost (£)</label>
+            </div>
+            <div class="input-field center">
+              <button class="btn-large pink white-text">Add Item</button>
+            </div>
+            <div class="input-field center">
+              <p id="error" class="red-text"></p>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="col s12 m5 push-m1">
+        <div class="canvas"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Compiled and minified JavaScript -->
+  
+  <script src="https://www.gstatic.com/firebasejs/5.4.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.4.2/firebase-firestore.js"></script>
+  <script>
+    // Initialize Firebase
+    var firebaseConfig = {
+        apiKey: "AIzaSyDVocCZFZPsSAqGN90AJQvPBaPeJ6uPY_4",
+        authDomain: "d3js-189e9.firebaseapp.com",
+        databaseURL: "https://d3js-189e9.firebaseio.com",
+        projectId: "d3js-189e9",
+        storageBucket: "d3js-189e9.appspot.com",
+        messagingSenderId: "497911450392",
+        appId: "1:497911450392:web:4a08a379211b7ee5cc6c6d"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const settings = {timestampsInSnapshots: true};
+    db.settings(settings);
+    // const db = firebase.firestore();
+    // db.settings({timestapsInSnapshots:true})
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.js"></script>
+  <script src="index.js"></script>
+  <script src="graph.js"></script>
+</body>
+</html>

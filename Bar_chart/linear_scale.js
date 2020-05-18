@@ -3,6 +3,7 @@
 *  LESSON 24 === https://github.com/iamshaunjp/data-ui-with-d3-firebase/blob/lesson-24/index.js
 * FINAL CODE https://github.com/iamshaunjp/data-ui-with-d3-firebase/blob/lesson-28/index.js
 * UPDATE FUNC CODE  https://github.com/iamshaunjp/data-ui-with-d3-firebase/blob/lesson-36/index.js
+• Tansitions https://github.com/iamshaunjp/data-ui-with-d3-firebase/blob/lesson-45/index.js
 */
 // select the svg container first
 const svg = d3.select('.canvas')
@@ -46,11 +47,18 @@ const yAxis = d3.axisLeft(y)
     .tickFormat(d => d + ' orders');
 
 // the update function
+
+// the update function
 const update = (data) => {
 
-    // join the data 
+    // join the data to circs
     const rects = graph.selectAll('rect')
         .data(data);
+
+    console.log(rects);
+
+    // remove unwanted rects
+    rects.exit().remove();
 
     // update the domains
     y.domain([0, d3.max(data, d => d.orders)]);
@@ -58,30 +66,64 @@ const update = (data) => {
 
     // add attrs to rects already in the DOM
     rects.attr('width', x.bandwidth)
-        .attr("height", d => graphHeight - y(d.orders))
         .attr('fill', 'orange')
         .attr('x', d => x(d.name))
-        .attr('y', d => y(d.orders));
+        .transition().duration(500)
+    // .attr('y', d => y(d.orders))
+    // .attr("height", d => graphHeight - y(d.orders))
 
     // append the enter selection to the DOM
     rects.enter()
         .append('rect')
         .attr('width', x.bandwidth)
-        .attr("height", d => graphHeight - y(d.orders))
         .attr('fill', 'orange')
-        .attr('x', (d) => x(d.name))
-        .attr('y', d => y(d.orders));
+        .attr('x', d => x(d.name))
+        .attr("height", 0)
+        .attr('y', graphHeight)
+        .merge(rects)
+        .transition().duration(500)
+        .attr('y', d => y(d.orders))
+        .attr("height", d => graphHeight - y(d.orders))
 
     xAxisGroup.call(xAxis);
     yAxisGroup.call(yAxis);
+
 };
 
-db.collection('dishes').get().then(res => {
+var data = [];
 
-    var data = [];
-    res.docs.forEach(doc => {
-        data.push(doc.data());
+db.collection('dishes').onSnapshot(res => {
+
+    res.docChanges().forEach(change => {
+
+        const doc = { ...change.doc.data(), id: change.doc.id };
+
+        switch (change.type) {
+            case 'added':
+                data.push(doc);
+                break;
+            case 'modified':
+                const index = data.findIndex(item => item.id == doc.id);
+                data[index] = doc;
+                break;
+            case 'removed':
+                data = data.filter(item => item.id !== doc.id);
+                break;
+            default:
+                break;
+        }
+
     });
 
     update(data);
+
 });
+
+
+const widthTween = (d) => {
+    let i = d3.interpolate(0, x.bandwidth);
+
+    return function (t) {
+        return i(t)
+    }
+}
