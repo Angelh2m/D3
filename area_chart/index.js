@@ -179,16 +179,16 @@ group
 const yAxis = d3
     .axisLeft(yScale);
 
-group
-    .append('g')
-    .attr('class', 'axis y-axis')
-    .call(yAxis);
+// group
+//     .append('g')
+//     .attr('class', 'axis y-axis')
+//     .call(yAxis);
 
 // remove the ticks and lines fabricating the axes
 d3
     .selectAll('g.axis')
     .selectAll('g.tick')
-    .remove();
+    // .remove();
 
 d3
     .selectAll('g.axis')
@@ -223,28 +223,32 @@ lines
 
 // for the x-axis include the start and end year
 // format the values to show only the year
-const formatYear = d3.timeFormat('%Y');
-const ticks = group
-    .selectAll('g.year')
-    .data([0, width])
-    .enter()
-    .append('g')
-    .attr('transform', d => `translate(${d} ${height})`);
+// const formatYear = d3.timeFormat('%Y');
+// const ticks = group
+//     .selectAll('g.year')
+//     .data([0, width])
+//     .enter()
+//     .append('g')
+//     .attr('transform', d => `translate(${d} ${height})`);
 
-ticks
-    .append('text')
-    .attr('x', 0)
-    .attr('y', 30)
-    .attr('text-anchor', (d, i) => i === 0 ? 'start' : 'end')
-    .attr('fill', 'currentColor')
-    .text(d => `${formatYear(xScale.invert(d))}`)
-    .attr('font-size', 14);
+// ticks
+//     .append('text')
+//     .attr('x', 0)
+//     .attr('y', 30)
+//     .attr('text-anchor', (d, i) => i === 0 ? 'start' : 'end')
+//     .attr('fill', 'currentColor')
+//     .text(d => `${formatYear(xScale.invert(d))}`)
+//     .attr('font-size', 14);
 
 // describe the line function to plot the data through a path element
 // for each data point the line function computes the coordinates based on the input year and percentage
 const line = d3
     .line()
-    .x(({ year }) => xScale(new Date(year))) // to obtain the value from the time scale the input needs to be a date object (like the domain)
+    .x(({ year }) => {
+        let line = xScale(new Date(year))
+        console.warn(year, line);
+        return line;
+    }) // to obtain the value from the time scale the input needs to be a date object (like the domain)
     .y(({ percentage }) => yScale(percentage))
     .curve(d3.curveBasis);// include a curve instead of straight segments
 
@@ -254,7 +258,7 @@ group
     .attr('d', line(data))
     .attr('fill', 'none')
     .attr('stroke', 'url(#gradient)')
-    .attr('stroke-width', 3);
+    .attr('stroke-width', 5);
 
 
 // describe an area function below the line
@@ -274,11 +278,85 @@ group
 
 // include a dot for the last data point
 const { year: lastYear, percentage: lastPercentage } = data[data.length - 1];
-group
+let circle  = group
     .append('circle')
     .attr('cx', xScale(new Date(lastYear)))
     .attr('cy', yScale(lastPercentage))
     .attr('r', 8)
-    .attr('fill', '#58d943');
+    .attr('fill', '#58d943')
+
+let animatedCircle  = group
+    .append('circle')
+    .attr('cx', xScale(new Date(lastYear)))
+    .attr('cy', yScale(lastPercentage))
+    .attr('r', 8)
+    .attr('fill', '#58d943')
+    .transition()
+    .duration(2000)
+        .ease(Math.sqrt)
+        .attr("r", 20)
+        .style("fill-opacity", 1e-6)
+        .style("stroke-opacity", 1e-10)
+        .remove()
+        // setTimeout(animatedCircle, 200);
+
+ d3.interval(function(elapsed) {
+    group
+    .append('circle')
+    .attr('cx', xScale(new Date(lastYear)))
+    .attr('cy', yScale(lastPercentage))
+    .attr('r', 8)
+    .attr('fill', '#58d943')
+    .transition()
+    .duration(2000)
+        .ease(Math.sqrt)
+        .attr("r", 20)
+        .style("fill-opacity", 1e-6)
+        .style("stroke-opacity", 1e-6)
+        .remove()
+            // .transition()
+            //   .attr("cx", xScale(new Date(lastYear)))
+            //   .attr("cy", yScale(lastPercentage))
+            //   .attr('r', 20)
+            //   .attr('fill', '#58d943')
+            //   .attr('opacity', 0.2)
+            // .transition()
+            //   .attr("cx", xScale(new Date(lastYear)))
+            //   .attr("cy", yScale(lastPercentage))
+            //   .attr('r', 20)
+            //   .attr('fill', '#58d943')
+            //   .attr('opacity', 0.2)
+            //   .transition()
+            //   .attr('opacity', 0);
+            //   .transition()
+            //   .attr("cx", 95)
+            //   .attr("cy", 10)
+            //   .transition()
+            //   .attr("cx", 190)
+            //   .attr("cy", 100)
+ }, 2000);
 
 
+//  d3.interval(function(elapsed) {
+//     animatedCircle
+//             .transition()
+//               .attr("cx", xScale(new Date(lastYear)))
+//               .attr("cy", yScale(lastPercentage))
+//               .attr('r', 20)
+//               .attr('fill', '#58d943')
+//               .attr('opacity', 0.2)
+//             .transition()
+//               .attr("cx", xScale(new Date(lastYear)))
+//               .attr("cy", yScale(lastPercentage))
+//               .attr('r', 20)
+//               .attr('fill', '#58d943')
+//               .attr('opacity', 0.2)
+//               .transition()
+//               .attr('opacity', 0);
+//             //   .transition()
+//             //   .attr("cx", 95)
+//             //   .attr("cy", 10)
+//             //   .transition()
+//             //   .attr("cx", 190)
+//             //   .attr("cy", 100)
+//  }, 1000);
