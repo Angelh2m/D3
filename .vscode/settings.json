@@ -1,3 +1,4 @@
 {
-    "liveServer.settings.multiRootWorkspaceName": "d3"
+    "liveServer.settings.multiRootWorkspaceName": "d3",
+    "liveServer.settings.port": 5501
 }
