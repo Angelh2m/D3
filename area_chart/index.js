@@ -2,38 +2,6 @@
 // https://data.worldbank.org/indicator/EG.FEC.RNEW.ZS
 const data = [
     {
-        year: '1990',
-        percentage: 17.0671538947666,
-    },
-    {
-        year: '1991',
-        percentage: 17.2238189234724,
-    },
-    {
-        year: '1992',
-        percentage: 17.5843343506126,
-    },
-    {
-        year: '1993',
-        percentage: 17.5984373876898,
-    },
-    {
-        year: '1994',
-        percentage: 17.6928633402301,
-    },
-    {
-        year: '1995',
-        percentage: 17.755347793459,
-    },
-    {
-        year: '1996',
-        percentage: 17.741819656794,
-    },
-    {
-        year: '1997',
-        percentage: 17.7683028072844,
-    },
-    {
         year: '1998',
         percentage: 17.9209223918013,
     },
@@ -145,8 +113,8 @@ linearGradient
     .attr('stop-color', '#58d943')
     .attr('offset', 1);
 
-// include the visualization in the nested group
-const group = svg
+// include the visualization in the nested graph
+const graph = svg
     .append('g')
     .attr('transform', `translate(${margin.left} ${margin.right})`);
 
@@ -168,9 +136,16 @@ const yScale = d3
 
 // include the axes based on the defined scales
 const xAxis = d3
-    .axisBottom(xScale);
+    .axisBottom(xScale)
+    .tickValues(data.map(function(d){
+        console.warn(d.year);
+        
+        return new Date(d.year)
+    }))
+    .tickFormat(d3.timeFormat("%Y"))
+    // .ticks(data.length)
 
-group
+graph
     .append('g')
     .attr('class', 'axis x-axis')
     .attr('transform', `translate(0 ${height})`)
@@ -179,24 +154,69 @@ group
 const yAxis = d3
     .axisLeft(yScale);
 
-// group
+// graph
 //     .append('g')
 //     .attr('class', 'axis y-axis')
 //     .call(yAxis);
 
 // remove the ticks and lines fabricating the axes
-d3
-    .selectAll('g.axis')
-    .selectAll('g.tick')
-    // .remove();
+// d3
+//     .selectAll('g.axis')
+//     .selectAll('g.tick')
+//     // .remove();
 
 d3
     .selectAll('g.axis')
     .select('path')
     .remove();
 
-// add three group elements for the horizontal grid lines
-const lines = group
+
+/* *
+*  HORIZONTAL LINE
+*/
+// graph.selectAll("vline")
+// .data(data)
+// .enter()
+// .append("line")
+// .attr('stroke', '#d8d8d8')
+// .attr('stroke-width', 1)
+// .attr('stroke-dasharray', 2)
+// .attr('class', 'vlines')
+// .style('opacity', 1)
+// .attr("x1", function(d) { 
+
+//     return xScale( new Date(d.year) )
+// })
+// .attr("x2", function(d) { 
+//     return xScale( new Date(d.year) )
+// })
+// .attr('y1', height)
+// // .attr('y2', yScale(height));
+
+
+// .attr("x", function(d) { return x(d.Country); })
+// .attr("y", function(d) { return y(d.Value); })
+// .attr("width", x.bandwidth())
+// .attr("height", function(d) { return height - y(d.Value); })
+// .attr("fill", "#69b3a2")
+
+const dottedLines = graph.append('g')
+    .attr('class', 'lines')
+    .style('opacity', 1);
+
+const xDottedLine = dottedLines.append('line')
+    .attr('stroke', '#aaa')
+    .attr('stroke-width', 1)
+    .attr('stroke-dasharray', 4);
+
+xDottedLine
+    .attr('x1', xScale(new Date('1992')))
+    .attr('x2', xScale(new Date('1992')))
+    .attr('y1', height)
+    .attr('y2', yScale(height));
+
+// add three graph elements for the horizontal grid lines
+const lines = graph
     .selectAll('g.line')
     .data([0, height / 2, height])
     .enter()
@@ -224,7 +244,7 @@ lines
 // for the x-axis include the start and end year
 // format the values to show only the year
 // const formatYear = d3.timeFormat('%Y');
-// const ticks = group
+// const ticks = graph
 //     .selectAll('g.year')
 //     .data([0, width])
 //     .enter()
@@ -253,7 +273,7 @@ const line = d3
     .curve(d3.curveBasis);// include a curve instead of straight segments
 
 // add a path element using the line function
-group
+graph
     .append('path')
     .attr('d', line(data))
     .attr('fill', 'none')
@@ -270,7 +290,7 @@ const area = d3
     .curve(d3.curveBasis); // same curve of the line
 
 // style the area with the gradient and a semi transparent fill
-group
+graph
     .append('path')
     .attr('d', area(data))
     .attr('fill', 'url(#gradient)')
@@ -278,14 +298,14 @@ group
 
 // include a dot for the last data point
 const { year: lastYear, percentage: lastPercentage } = data[data.length - 1];
-let circle  = group
+let circle  = graph
     .append('circle')
     .attr('cx', xScale(new Date(lastYear)))
     .attr('cy', yScale(lastPercentage))
     .attr('r', 8)
     .attr('fill', '#58d943')
 
-let animatedCircle  = group
+let animatedCircle  = graph
     .append('circle')
     .attr('cx', xScale(new Date(lastYear)))
     .attr('cy', yScale(lastPercentage))
@@ -301,7 +321,7 @@ let animatedCircle  = group
         // setTimeout(animatedCircle, 200);
 
  d3.interval(function(elapsed) {
-    group
+    graph
     .append('circle')
     .attr('cx', xScale(new Date(lastYear)))
     .attr('cy', yScale(lastPercentage))
