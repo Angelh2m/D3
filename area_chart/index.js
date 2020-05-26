@@ -3,76 +3,37 @@
 const data = [
     {
         year: '1998',
-        percentage: 17.9209223918013,
+        price: 5000,
     },
     {
         year: '1999',
-        percentage: 18.1298420308909,
+        price: 9000,
     },
     {
         year: '2000',
-        percentage: 17.8993921979056,
+        price: 2000,
     },
     {
         year: '2001',
-        percentage: 17.6015066667197,
+        price: 10000,
     },
     {
         year: '2002',
-        percentage: 17.6183731904508,
+        price: 9000,
     },
     {
         year: '2003',
-        percentage: 17.434098206958,
+        price: 5000,
     },
     {
         year: '2004',
-        percentage: 17.0972296583476,
+        price: 8000,
     },
     {
         year: '2005',
-        percentage: 17.0434424770035,
+        price: 19800,
     },
-    {
-        year: '2006',
-        percentage: 17.1212606863223,
-    },
-    {
-        year: '2007',
-        percentage: 16.9083050750164,
-    },
-    {
-        year: '2008',
-        percentage: 17.0350290849647,
-    },
-    {
-        year: '2009',
-        percentage: 17.5116086035299,
-    },
-    {
-        year: '2010',
-        percentage: 17.2551919506048,
-    },
-    {
-        year: '2011',
-        percentage: 17.2097710318662,
-    },
-    {
-        year: '2012',
-        percentage: 17.4762365885514,
-    },
-    {
-        year: '2013',
-        percentage: 17.6990568614625,
-    },
-    {
-        year: '2014',
-        percentage: 17.8701840419389,
-    },
-    {
-        year: '2015',
-        percentage: 18.0537549929864,
-    },
+   
 ];
 
 // in the .viz container add an svg element following the margin convention
@@ -80,7 +41,7 @@ const margin = {
     top: 40,
     right: 50,
     bottom: 40,
-    left: 30,
+    left: 40,
 };
 const width = 700 - (margin.left + margin.right);
 const height = 350 - (margin.top + margin.bottom);
@@ -125,10 +86,10 @@ const xScale = d3
     .domain([new Date(data[0].year), new Date(data[data.length - 1].year)]) // ! the domain of a time scale describes two date objects
     .range([0, width]);
 
-// y-axis: linear scale using the percentages
-// consider two values outside of the percentages' actual minimum and maximum values
+// y-axis: linear scale using the prices
+// consider two values outside of the prices' actual minimum and maximum values
 // this to show whitespace around the line chart
-const [minP, maxP] = d3.extent(data, ({ percentage }) => percentage);
+const [minP, maxP] = d3.extent(data, ({ price }) => price);
 const yScale = d3
     .scaleLinear()
     .domain([minP * 0.95, maxP * 1.05]) // 5% around the actual values
@@ -152,12 +113,17 @@ graph
     .call(xAxis);
 
 const yAxis = d3
-    .axisLeft(yScale);
+    .axisLeft(yScale)
+    .tickValues(data.map(function(d){
+        console.warn(d.price);
+        
+        return d.price
+    }))
 
-// graph
-//     .append('g')
-//     .attr('class', 'axis y-axis')
-//     .call(yAxis);
+graph
+    .append('g')
+    .attr('class', 'axis y-axis')
+    .call(yAxis);
 
 // remove the ticks and lines fabricating the axes
 // d3
@@ -174,31 +140,57 @@ d3
 /* *
 *  HORIZONTAL LINE
 */
-// graph.selectAll("vline")
-// .data(data)
-// .enter()
-// .append("line")
-// .attr('stroke', '#d8d8d8')
-// .attr('stroke-width', 1)
-// .attr('stroke-dasharray', 2)
-// .attr('class', 'vlines')
-// .style('opacity', 1)
-// .attr("x1", function(d) { 
+graph.selectAll("vline")
+.data(data)
+.enter()
+.append("line")
+.attr('stroke', '#e6f9e4')
+.attr('stroke-width', 1)
+.attr('stroke-dasharray', 2)
+.attr('class', 'vlines')
+.style('opacity', 1)
+.attr("x1", function(d) { 
 
-//     return xScale( new Date(d.year) )
-// })
-// .attr("x2", function(d) { 
-//     return xScale( new Date(d.year) )
-// })
-// .attr('y1', height)
-// // .attr('y2', yScale(height));
+    return xScale( new Date(d.year) )
+})
+.attr("x2", function(d) { 
+    return xScale( new Date(d.year) )
+})
+.attr('y1', height)
 
 
-// .attr("x", function(d) { return x(d.Country); })
-// .attr("y", function(d) { return y(d.Value); })
-// .attr("width", x.bandwidth())
-// .attr("height", function(d) { return height - y(d.Value); })
-// .attr("fill", "#69b3a2")
+/* *
+*  VERTICAL LINE
+*/
+graph.selectAll("vline")
+    .data(data)
+    .enter()
+    .append("line")
+    .attr('stroke', '#e6f9e4')
+    .attr('stroke-width', 1)
+    // .attr('stroke-dasharray', 2)
+    .attr('class', 'vlines')
+    .style('opacity', 1)
+    .attr("y1", function(d) { 
+        console.warn(d.price);
+        return yScale( d.price )
+    })
+    .attr("y2", function(d) { 
+        return yScale(d.price )
+    })
+    .attr('x1', width)
+
+    // .attr('y2', yScale(height));
+    // .attr("x", function(d) { return x(d.Country); })
+    // .attr("y", function(d) { return y(d.Value); })
+    // .attr("width", x.bandwidth())
+    // .attr("height", function(d) { return height - y(d.Value); })
+    // .attr("fill", "#69b3a2")
+
+
+/* *
+*  DOTTED LINE
+*/
 
 const dottedLines = graph.append('g')
     .attr('class', 'lines')
@@ -223,23 +215,23 @@ const lines = graph
     .append('g')
     .attr('transform', d => `translate(0 ${d})`);
 
-lines
-    .append('path')
-    .attr('d', `M 0 0 h ${width}`)
-    .attr('fill', 'none')
-    .attr('stroke', 'currentColor')
-    .attr('opacity', 0.2);
+// lines
+//     .append('path')
+//     .attr('d', `M 0 0 h ${width}`)
+//     .attr('fill', 'none')
+//     .attr('stroke', 'currentColor')
+//     .attr('opacity', 0.2);
 
 // add three text elements describing the value at the end of the three lines
 // format the values to include 2 digits after the decimal point
-const formatPercentage = d3.format('.2f');
-lines
-    .append('text')
-    .attr('x', width + 4)
-    .attr('y', -2)
-    .attr('fill', 'currentColor')
-    .text(d => `${formatPercentage(yScale.invert(d))}%`)
-    .attr('font-size', 14);
+// const formatprice = d3.format('.2f');
+// lines
+//     .append('text')
+//     .attr('x', width + 4)
+//     .attr('y', -2)
+//     .attr('fill', 'currentColor')
+//     .text(d => `${formatprice(yScale.invert(d))}%`)
+//     .attr('font-size', 14);
 
 // for the x-axis include the start and end year
 // format the values to show only the year
@@ -261,15 +253,15 @@ lines
 //     .attr('font-size', 14);
 
 // describe the line function to plot the data through a path element
-// for each data point the line function computes the coordinates based on the input year and percentage
+// for each data point the line function computes the coordinates based on the input year and price
 const line = d3
     .line()
     .x(({ year }) => {
         let line = xScale(new Date(year))
-        console.warn(year, line);
+        // console.warn(year, line);
         return line;
     }) // to obtain the value from the time scale the input needs to be a date object (like the domain)
-    .y(({ percentage }) => yScale(percentage))
+    .y(({ price }) => yScale(price))
     .curve(d3.curveBasis);// include a curve instead of straight segments
 
 // add a path element using the line function
@@ -285,8 +277,8 @@ graph
 const area = d3
     .area()
     .x(({ year }) => xScale(new Date(year)))
-    .y0(({ percentage }) => yScale(minP * 0.95)) // going from the bottom of the visualization to the data points' values
-    .y1(({ percentage }) => yScale(percentage))
+    .y0(({ price }) => yScale(minP * 0.95)) // going from the bottom of the visualization to the data points' values
+    .y1(({ price }) => yScale(price))
     .curve(d3.curveBasis); // same curve of the line
 
 // style the area with the gradient and a semi transparent fill
@@ -297,18 +289,18 @@ graph
     .attr('opacity', 0.15);
 
 // include a dot for the last data point
-const { year: lastYear, percentage: lastPercentage } = data[data.length - 1];
+const { year: lastYear, price: lastprice } = data[data.length - 1];
 let circle  = graph
     .append('circle')
     .attr('cx', xScale(new Date(lastYear)))
-    .attr('cy', yScale(lastPercentage))
+    .attr('cy', yScale(lastprice))
     .attr('r', 8)
     .attr('fill', '#58d943')
 
 let animatedCircle  = graph
     .append('circle')
     .attr('cx', xScale(new Date(lastYear)))
-    .attr('cy', yScale(lastPercentage))
+    .attr('cy', yScale(lastprice))
     .attr('r', 8)
     .attr('fill', '#58d943')
     .transition()
@@ -324,7 +316,7 @@ let animatedCircle  = graph
     graph
     .append('circle')
     .attr('cx', xScale(new Date(lastYear)))
-    .attr('cy', yScale(lastPercentage))
+    .attr('cy', yScale(lastprice))
     .attr('r', 8)
     .attr('fill', '#58d943')
     .transition()
@@ -336,13 +328,13 @@ let animatedCircle  = graph
         .remove()
             // .transition()
             //   .attr("cx", xScale(new Date(lastYear)))
-            //   .attr("cy", yScale(lastPercentage))
+            //   .attr("cy", yScale(lastprice))
             //   .attr('r', 20)
             //   .attr('fill', '#58d943')
             //   .attr('opacity', 0.2)
             // .transition()
             //   .attr("cx", xScale(new Date(lastYear)))
-            //   .attr("cy", yScale(lastPercentage))
+            //   .attr("cy", yScale(lastprice))
             //   .attr('r', 20)
             //   .attr('fill', '#58d943')
             //   .attr('opacity', 0.2)
@@ -361,13 +353,13 @@ let animatedCircle  = graph
 //     animatedCircle
 //             .transition()
 //               .attr("cx", xScale(new Date(lastYear)))
-//               .attr("cy", yScale(lastPercentage))
+//               .attr("cy", yScale(lastprice))
 //               .attr('r', 20)
 //               .attr('fill', '#58d943')
 //               .attr('opacity', 0.2)
 //             .transition()
 //               .attr("cx", xScale(new Date(lastYear)))
-//               .attr("cy", yScale(lastPercentage))
+//               .attr("cy", yScale(lastprice))
 //               .attr('r', 20)
 //               .attr('fill', '#58d943')
 //               .attr('opacity', 0.2)
